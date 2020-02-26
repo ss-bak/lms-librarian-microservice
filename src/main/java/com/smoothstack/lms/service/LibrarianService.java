@@ -7,62 +7,67 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.smoothstack.lms.dao.BookDao;
-import com.smoothstack.lms.dao.BranchDao;
-import com.smoothstack.lms.dao.CopiesDao;
-import com.smoothstack.lms.model.Book;
-import com.smoothstack.lms.model.BookBranch;
-import com.smoothstack.lms.model.Branch;
-import com.smoothstack.lms.model.Copies;
+import com.smoothstack.lms.common.model.Book;
+import com.smoothstack.lms.common.model.Branch;
+import com.smoothstack.lms.common.model.Copies;
+import com.smoothstack.lms.common.repository.BookCommonRepository;
+import com.smoothstack.lms.common.repository.BranchCommonRepository;
+import com.smoothstack.lms.common.repository.CopiesCommonRepository;
 
 @Service
 public class LibrarianService {
 
 	@Autowired
-	private BranchDao libraryBranchDao;
+	private BranchCommonRepository branchCommonRepository;
 
 	@Autowired
-	private BookDao bookDao;
+	private BookCommonRepository bookCommonRepository;
 
 	@Autowired
-	private CopiesDao copiesDao;
+	private CopiesCommonRepository copiesCommonRepository;
 
 	public List<Branch> getBranches() {
-		return libraryBranchDao.findAll();
+		return branchCommonRepository.findAll();
 	}
 
 	public Optional<Branch> getBranchById(long id) {
-		return libraryBranchDao.findById(id);
+		return branchCommonRepository.findById(id);
 	}
 
 	@Transactional
 	public boolean updateBranch(Branch libraryBranch) {
-		if (!libraryBranchDao.existsById(libraryBranch.getBranchId())) {
+		if (!branchCommonRepository.existsById(libraryBranch.getBranchId())) {
 			return false;
 		}
-		libraryBranchDao.save(libraryBranch);
+		branchCommonRepository.save(libraryBranch);
 		return true;
 	}
 
 	public List<Book> getBooks() {
-		return bookDao.findAll();
+		return bookCommonRepository.findAll();
 	}
 
 	public Optional<Copies> getCopiesById(long bookId, long branchId) {
-		return copiesDao.findById(new BookBranch(bookId, branchId));
+		Book book = new Book();
+		book.setBookId(bookId);
+		Branch branch = new Branch();
+		branch.setBranchId(branchId);
+		return copiesCommonRepository.findAllByBookAndBranchAndCopiesAmountGreaterThanEqual(book, branch, 0);
 	}
 
 	@Transactional
 	public void addCopies(Copies copies) {
-		copiesDao.save(copies);
+		copiesCommonRepository.save(copies);
 	}
 
 	@Transactional
 	public boolean updateCopies(Copies copies) {
-		if (!copiesDao.existsById(new BookBranch(copies.getBook().getBookId(), copies.getBranch().getBranchId()))) {
+		if (!copiesCommonRepository
+				.findAllByBookAndBranchAndCopiesAmountGreaterThanEqual(copies.getBook(), copies.getBranch(), 0)
+				.isPresent()) {
 			return false;
 		}
-		copiesDao.save(copies);
+		copiesCommonRepository.save(copies);
 		return true;
 	}
 

@@ -14,10 +14,10 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
+import com.smoothstack.lms.common.model.Book;
+import com.smoothstack.lms.common.model.Branch;
+import com.smoothstack.lms.common.model.Copies;
 import com.smoothstack.lms.controller.LibrarianController;
-import com.smoothstack.lms.model.Book;
-import com.smoothstack.lms.model.Branch;
-import com.smoothstack.lms.model.Copies;
 import com.smoothstack.lms.service.LibrarianService;
 
 @SpringBootTest

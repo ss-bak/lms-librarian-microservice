@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.smoothstack.lms.model.Book;
-import com.smoothstack.lms.model.Branch;
-import com.smoothstack.lms.model.Copies;
+import com.smoothstack.lms.common.model.Book;
+import com.smoothstack.lms.common.model.Branch;
+import com.smoothstack.lms.common.model.Copies;
 import com.smoothstack.lms.service.LibrarianService;
 
 @RequestMapping("/librarian")
