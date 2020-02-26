@@ -8,11 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.smoothstack.lms.common.model.Book;
+import com.smoothstack.lms.common.model.BookBranch;
 import com.smoothstack.lms.common.model.Branch;
 import com.smoothstack.lms.common.model.Copies;
 import com.smoothstack.lms.common.repository.BookCommonRepository;
 import com.smoothstack.lms.common.repository.BranchCommonRepository;
-import com.smoothstack.lms.common.repository.CopiesCommonRepository;
+import com.smoothstack.lms.repository.CopiesRepository;
 
 @Service
 public class LibrarianService {
@@ -24,7 +25,7 @@ public class LibrarianService {
 	private BookCommonRepository bookCommonRepository;
 
 	@Autowired
-	private CopiesCommonRepository copiesCommonRepository;
+	private CopiesRepository copiesRepository;
 
 	public List<Branch> getBranches() {
 		return branchCommonRepository.findAll();
@@ -48,26 +49,21 @@ public class LibrarianService {
 	}
 
 	public Optional<Copies> getCopiesById(long bookId, long branchId) {
-		Book book = new Book();
-		book.setBookId(bookId);
-		Branch branch = new Branch();
-		branch.setBranchId(branchId);
-		return copiesCommonRepository.findAllByBookAndBranchAndCopiesAmountGreaterThanEqual(book, branch, 0);
+		return copiesRepository.findById(new BookBranch(bookId, branchId));
 	}
 
 	@Transactional
 	public void addCopies(Copies copies) {
-		copiesCommonRepository.save(copies);
+		copiesRepository.save(copies);
 	}
 
 	@Transactional
 	public boolean updateCopies(Copies copies) {
-		if (!copiesCommonRepository
-				.findAllByBookAndBranchAndCopiesAmountGreaterThanEqual(copies.getBook(), copies.getBranch(), 0)
-				.isPresent()) {
+		if (!copiesRepository
+				.existsById(new BookBranch(copies.getBook().getBookId(), copies.getBranch().getBranchId()))) {
 			return false;
 		}
-		copiesCommonRepository.save(copies);
+		copiesRepository.save(copies);
 		return true;
 	}
 
