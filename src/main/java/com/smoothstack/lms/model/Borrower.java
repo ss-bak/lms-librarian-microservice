@@ -1,63 +1,104 @@
 package com.smoothstack.lms.model;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Objects;
+import java.util.StringJoiner;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+@Entity
+@Table(name = "t_borrower")
+@Access(AccessType.FIELD)
 public class Borrower implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private Integer cardNumber;
-	private String name;
-	private String address;
-	private String phone;
-	private List<Book> books;
 
-	public Integer getCardNumber() {
-		return cardNumber;
+	@Id
+	@Column(name = "borrowerId")
+	@SequenceGenerator(name = "borrower", sequenceName = "borrowerId", initialValue = 1, allocationSize = 1)
+	@GeneratedValue(generator = "borrower")
+	private long borrowerId;
+
+	@Column(name = "borrowerName", nullable = false)
+	@NotNull
+	@NotBlank
+	private String borrowerName;
+
+	@Column(name = "borrowerAddress")
+	private String borrowerAddress;
+
+	@Column(name = "borrowerPhone")
+	private String borrowerPhone;
+
+	public Borrower() {
 	}
 
-	public void setCardNumber(Integer cardNumber) {
-		this.cardNumber = cardNumber;
+	public Borrower(@NotNull @NotBlank String borrowerName, String borrowerAddress, String borrowerPhone) {
+		this.borrowerName = borrowerName;
+		this.borrowerAddress = borrowerAddress;
+		this.borrowerPhone = borrowerPhone;
 	}
 
-	public String getName() {
-		return name;
+	public long getBorrowerId() {
+		return borrowerId;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setBorrowerId(long borrowerId) {
+		this.borrowerId = borrowerId;
 	}
 
-	public String getAddress() {
-		return address;
+	public String getBorrowerName() {
+		return borrowerName;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
+	public void setBorrowerName(String borrowerName) {
+		this.borrowerName = borrowerName;
 	}
 
-	public String getPhone() {
-		return phone;
+	public String getBorrowerAddress() {
+		return borrowerAddress;
 	}
 
-	public void setPhone(String phone) {
-		this.phone = phone;
+	public void setBorrowerAddress(String borrowerAddress) {
+		this.borrowerAddress = borrowerAddress;
 	}
 
-	public List<Book> getBooks() {
-		return books;
+	public String getBorrowerPhone() {
+		return borrowerPhone;
 	}
 
-	public void setBooks(List<Book> books) {
-		this.books = books;
+	public void setBorrowerPhone(String borrowerPhone) {
+		this.borrowerPhone = borrowerPhone;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Borrower borrower = (Borrower) o;
+		return getBorrowerId() == borrower.getBorrowerId() && getBorrowerName().equals(borrower.getBorrowerName())
+				&& Objects.equals(getBorrowerAddress(), borrower.getBorrowerAddress())
+				&& Objects.equals(getBorrowerPhone(), borrower.getBorrowerPhone());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getBorrowerId(), getBorrowerName(), getBorrowerAddress(), getBorrowerPhone());
 	}
 
 	@Override
 	public String toString() {
-		return "Borrower [cardNumber=" + cardNumber + ", name=" + name + ", address=" + address + ", phone=" + phone
-				+ ", books=" + books + "]";
+		return new StringJoiner(", ", Borrower.class.getSimpleName() + "[", "]").add("id=" + borrowerId)
+				.add("name='" + borrowerName + "'").add("address='" + borrowerAddress + "'")
+				.add("phone='" + borrowerPhone + "'").toString();
 	}
-
 }

@@ -1,44 +1,95 @@
 package com.smoothstack.lms.model;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+@Entity
+@Table(name = "t_author")
+@Access(AccessType.FIELD)
 public class Author implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private Integer id;
-	private String name;
-	private List<Book> books;
 
-	public Integer getId() {
-		return id;
+	@Id
+	@Column(name = "authorId")
+	@SequenceGenerator(name = "author", sequenceName = "authorId", initialValue = 1, allocationSize = 1)
+	@GeneratedValue(generator = "author")
+	private long authorId;
+
+	@Column(name = "authorName", nullable = false)
+	@NotNull
+	@NotBlank
+	private String authorName;
+
+	@ManyToMany(mappedBy = "bookAuthorSet")
+	private Set<Book> authorBookSet = new HashSet<>();
+
+	public Author() {
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public Author(@NotNull @NotBlank String authorName) {
+		this.authorName = authorName;
 	}
 
-	public String getName() {
-		return name;
+	public long getAuthorId() {
+		return authorId;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setAuthorId(long authorId) {
+		this.authorId = authorId;
 	}
 
-	public List<Book> getBooks() {
-		return books;
+	public String getAuthorName() {
+		return authorName;
 	}
 
-	public void setBooks(List<Book> books) {
-		this.books = books;
+	public void setAuthorName(String authorName) {
+		this.authorName = authorName;
+	}
+
+	public Set<Book> getAuthorBookSet() {
+		return authorBookSet;
+	}
+
+	public void setAuthorBookSet(Set<Book> authorBookSet) {
+		this.authorBookSet = authorBookSet;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Author author = (Author) o;
+		return getAuthorId() == author.getAuthorId() && getAuthorName().equals(author.getAuthorName())
+				&& Objects.equals(getAuthorBookSet(), author.getAuthorBookSet());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getAuthorId(), getAuthorName());
 	}
 
 	@Override
 	public String toString() {
-		return "Author [id=" + id + ", name=" + name + ", books=" + books + "]";
+		return new StringJoiner(", ", Author.class.getSimpleName() + "[", "]").add("id=" + authorId)
+				.add("name='" + authorName + "'").add("bookSet=" + authorBookSet.stream()
+						.map(book -> Long.toString(book.getBookId())).collect(Collectors.joining(",", "[", "]")))
+				.toString();
 	}
-
 }
